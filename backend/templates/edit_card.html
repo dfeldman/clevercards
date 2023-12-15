@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Card</title>
+</head>
+<body>
+    <h2>Edit Card</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.front.label }}<br>
+            {{ form.front(id='front', value=form.front.data or card.front) }}
+            {% if form.front.errors %}
+                <div class="error">{{ form.front.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.back.label }}<br>
+            {{ form.back(id='back', value=form.back.data or card.back) }}
+            {% if form.back.errors %}
+                <div class="error">{{ form.back.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Additional fields can be added here if required -->
+
+        <div class="form-group">
+            {{ form.enabled.label }}<br>
+            {{ form.enabled(id='enabled', checked=card.enabled) }}
+        </div>
+
+        <input type="submit" value="Update Card">
+    </form>
+    <a href="{{ url_for('edit_deck', deck_id=card.deck_id) }}">Back to Deck</a>
+</body>
+</html>

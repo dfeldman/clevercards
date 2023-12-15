@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Screen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Flash Card Decks</h1>
+    <div id="decks" class="deck-container">
+        {% for stats in deck_stats %}
+            <div class="deck-row">
+                <span>{{ stats.deck_name }}</span>
+                <div class="deck-stats">
+                    <span class="stat easy">{{ stats.easy }}</span>
+                    <span class="stat medium">{{ stats.medium }}</span>
+                    <span class="stat hard">{{ stats.hard }}</span>
+                    <span class="stat again">{{ stats.again }}</span>
+                    <span class="stat no-history">{{ stats.no_history }}</span>
+                    <span class="stat total">{{ stats.total_reviewed }}</span>
+                </div>
+                <button onclick="location.href='/edit_deck/{{ stats.deck_id }}'">Edit</button>
+                <button onclick="location.href='/review/{{ stats.deck_id }}'" {% if stats.total_cards == 0 %}disabled{% endif %}>Review</button>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- Add Deck button at the bottom -->
+    <div id="add-deck">
+        <button onclick="location.href='/add_deck'">Add Deck</button>
+    </div>
+</body>
+</html>

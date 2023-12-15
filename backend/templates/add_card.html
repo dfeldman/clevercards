@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Card to Deck: {{ deck.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Add a New Card to Deck: {{ deck.name }}</h1>
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.front.label }}
+            {{ form.front(rows=3, id='front', maxlength=1000) }}
+            {% if form.front.errors %}
+                <span class="error">{{ form.front.errors[0] }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.back.label }}
+            {{ form.back(rows=3, id='back', maxlength=1000) }}
+            {% if form.back.errors %}
+                <span class="error">{{ form.back.errors[0] }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Additional fields like 'source' and 'tags' can be added here if required -->
+
+        <input type="submit" value="Add Card">
+    </form>
+    <button onclick="location.href='/edit_deck/{{ deck.id }}'">Back to Edit Deck</button>
+</body>
+</html>

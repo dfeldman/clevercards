@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Deck: {{ deck.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        let sessionStartTime = new Date({{ session_start_time * 1000 }});
+        let timerInterval;
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                let elapsedTime = new Date() - sessionStartTime;
+                document.getElementById('session-timer').textContent = formatTime(elapsedTime);
+            }, 1000);
+        }
+        function formatTime(milliseconds) {
+            let totalSeconds = Math.floor(milliseconds / 1000);
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = totalSeconds % 60;
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        }
+        // Remove the onbeforeunload event handler
+        window.onload = startTimer;
+    </script>
+</head>
+<body>
+    <h1>Reviewing Deck: {{ deck.name }}</h1>
+    <div id="session-info">
+        <span>Session Time: <span id="session-timer">0:00</span></span>
+    </div>
+    {% if card %}
+        <div class="card">
+            <div class="front"><h3>{{ card.front }}</h3>
+            <form method="post" id="rating-form">
+                <input type="hidden" name="card_id" value="{{ card.id }}">
+                <input type="hidden" name="status" id="status-field">
+                <input type="hidden" name="session_id" value="{{ session.id }}">
+                <button type="button" onclick="submitReview('Easy')">Easy</button>
+                <button type="button" onclick="submitReview('Medium')">Medium</button>
+                <button type="button" onclick="submitReview('Hard')">Hard</button>
+                <button type="button" onclick="submitReview('Again')">Again</button>
+            </form>
+ 
+	    </div>
+            <div class="back" style="display:none;" id="card-back">
+                <h3>{{card.back}}</h3>
+                <div class="statistics">
+                    <h3>Statistics:</h3>
+                    <p>Times Reviewed: {{ card.histories|length }}</p>
+                    <p>Easy: {{ card.histories|selectattr('status', 'equalto', 'Easy')|list|length }}</p>
+                    <p>Medium: {{ card.histories|selectattr('status', 'equalto', 'Medium')|list|length }}</p>
+                    <p>Hard: {{ card.histories|selectattr('status', 'equalto', 'Hard')|list|length }}</p>
+                    <p>Again: {{ card.histories|selectattr('status', 'equalto', 'Again')|list|length }}</p>
+                </div>
+           <button type="button" id="next-btn" onclick="location.reload();">Next</button>
+        </div>
+        <p>Session Time: {{ session_time }}</p>
+        <script>
+            function submitReview(statusValue) {
+                document.getElementById('status-field').value = statusValue;
+                var formData = new FormData(document.getElementById('rating-form'));
+                fetch("{{ url_for('submit_review') }}", {
+                    method: 'POST',
+                    body: formData
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    if(data.success) {
+                        document.getElementById('card-back').style.display = 'block';
+                        document.getElementById('next-btn').style.display = 'inline';
+                        document.getElementById('rating-form').style.display = 'none';
+                    }
+                });
+            }
+        </script>
+    {% else %}
+        <p>No more cards to review.</p>
+    {% endif %}
+    <p>Cards reviewed this session: {{ session.histories|length }}</p>
+    <div class="button-row">
+        <form action="{{ url_for('end_session', session_id=session.id) }}" method="post">
+            <button type="submit">End Session</button>
+        </form>
+    </div>
+</body>
+</html>
+<!-- Remove the entire duplicated section -->

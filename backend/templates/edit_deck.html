@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Deck: {{ deck.name }}</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Deck: {{ deck.name }}</h1>
+    <form method="post">
+        {% for card in cards %}
+        <div class="card" id="card-{{ card.id }}">
+            <div class="form-group">
+                <label for="front-{{ card.id }}">Front:</label>
+                <textarea id="front-{{ card.id }}" name="front-{{ card.id }}" maxlength="1000">{{ card.front }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="back-{{ card.id }}">Back:</label>
+                <textarea id="back-{{ card.id }}" name="back-{{ card.id }}" maxlength="1000">{{ card.back }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="enabled-{{ card.id }}">Status:</label>
+                <select id="enabled-{{ card.id }}" name="enabled-{{ card.id }}">
+                    <option value="true" {% if card.enabled %}selected{% endif %}>Enabled</option>
+                    <option value="false" {% if not card.enabled %}selected{% endif %}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group delete-card">
+                <input type="checkbox" name="delete-{{ card.id }}" id="delete-{{ card.id }}" onclick="hideCardElement({{ card.id }})">
+                <label for="delete-{{ card.id }}">Delete</label>
+            </div>
+        </div>
+        {% endfor %}
+        <input type="submit" value="Save Changes">
+        <button type="button" onclick="location.href='/'">Cancel</button>
+    </form>
+    <button onclick="location.href='/add_card/{{ deck.id }}'">Add Card</button>
+    <button onclick="location.href='/'">Back to Decks</button>
+    </div>
+    <script>
+        function hideCardElement(cardId) {
+            var cardElement = document.getElementById('card-' + cardId);
+            if (cardElement) {
+                cardElement.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

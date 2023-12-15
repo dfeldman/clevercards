@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deck Import Progress</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Deck Import Progress</h2>
+    <div id="progress">Loading...</div>
+    <script>
+        function fetchProgress() {
+            $.getJSON('/import_progress/{{ deck_id }}', function(data) {
+                if (data.importing) {
+                    $('#progress').text('Progress: ' + data.progress + '%');
+                    setTimeout(fetchProgress, 1000);
+                } else {
+                    $('#progress').text('Import complete!');
+                }
+            });
+        }
+
+        fetchProgress();
+    </script>
+</body>
+</html>

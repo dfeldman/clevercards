@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deck List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .stats-bar { height: 20px; width: 100%; background-color: #f1f1f1; }
+        .easy { background-color: green; }
+        .medium { background-color: orange; }
+        .hard { background-color: red; }
+        .again { background-color: blue; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container mt-5">
+        <h2>Deck List</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Deck ID</th>
+                    <th>Deck Name</th>
+                    <th>Stats</th>
+                    <th>No History</th>
+                    <th>Total Cards</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="deck in decks" :key="deck.deck_id">
+                    <td>[[ deck.deck_id ]]</td>
+                    <td class="editable" @dblclick="editDeckName(deck)"> [[ deck.name ]] </td>
+                    <td>
+                        <div class="stats-bar" v-html="formatStats(deck)"></div>
+                    </td>
+                    <td>[[ deck.no_history ]]</td>
+                    <td>[[ deck.total_cards ]]</td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="text" v-model="newDeckName">Deck name</input><button class="btn btn-primary" v-on:click="addDeck">Add Deck</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],  // Change Vue.js delimiters to avoid conflict with Jinja2
+            data: {
+                decks: [], // This will hold the decks data
+                newDeckName:''
+            },
+            mounted() {
+                // Fetch decks data from API
+                // Replace with actual API call
+                this.fetchDecks();
+            },
+            methods: {
+                editDeckName(deck) {
+                    // Implementation of editDeckName method
+                },
+                fetchDecks() {
+                    axios.get('/decks')
+                    .then(response => {
+                        // Mock response, replace with actual API response
+                         this.decks = response.data; // Assign the response data to decks
+                    })
+                    .catch(error => console.error(error));
+                },
+                formatStats(deck) {
+                    const total = deck.easy + deck.medium + deck.hard + deck.again;
+                    const easyWidth = (deck.easy / total) * 100;
+                    const mediumWidth = (deck.medium / total) * 100;
+                    const hardWidth = (deck.hard / total) * 100;
+                    const againWidth = (deck.again / total) * 100;
+
+                    return `
+                        <div class="easy" style="width: ${easyWidth}%"></div>
+                        <div class="medium" style="width: ${mediumWidth}%"></div>
+                        <div class="hard" style="width: ${hardWidth}%"></div>
+                        <div class="again" style="width: ${againWidth}%"></div>
+                    `;
+                
+                },
+                addDeck() {
+                    axios.post('/api/add_deck', {
+                        deckName: this.newDeckName
+                    })
+                    .then(response => {
+                        // Handle the response
+                        this.fetchDecks();
+                        this.newDeckName = '';
+                        console.log(response);
+                    })
+                    .catch(error => {
+                        // Handle the error
+                        console.log(error);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
